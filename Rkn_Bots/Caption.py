@@ -93,66 +93,63 @@ async def delCap(_, msg):
         await asyncio.sleep(5)
         await e_val.delete()
         return
-
+        
 @Client.on_message(filters.channel)
 async def auto_edit_caption(bot, message):
     chnl_id = message.chat.id
-    
-    if message.caption:                           #ignore
-        return
-
+    if message.caption:
+        return      
     if message.media_group_id:
         media_group_id = message.media_group_id
-        media_group_messages = await bot.get_messages(message.chat.id, message_id=[message.id])
-        
-        if media_group_messages:  #album cation
+        media_group_messages = await bot.get_media_group(message.chat.id, media_group_id)
+        if media_group_messages:
             first_message = media_group_messages[0]
             if first_message.media:
                 for file_type in ("video", "audio", "document", "voice"):
                     obj = getattr(first_message, file_type, None)
                     if obj and hasattr(obj, "file_name"):
                         file_name = obj.file_name
-                        file_name = (
-                            re.sub(r"@\w+\s*", "", file_name)
-                            .replace("_", " ")
-                            .replace(".", " ")
-                        )
-                        cap_dets = await chnl_ids.find_one({"chnl_id": chnl_id})
-                        try:
-                            if cap_dets:
-                                cap = cap_dets["caption"]
-                                replaced_caption = cap.format(file_name=file_name)
-                                await first_message.edit(replaced_caption)
-                            else:
-                                replaced_caption = Rkn_Bots.DEF_CAP.format(file_name=file_name)
-                                await first_message.edit(replaced_caption)
-                        except FloodWait as e:
-                            await asyncio.sleep(e.x)
-                            continue
+                        if file_name: 
+                            file_name = (
+                                re.sub(r"@\w+\s*", "", file_name)
+                                .replace("_", " ")
+                                .replace(".", " ")
+                            )
+                            cap_dets = await chnl_ids.find_one({"chnl_id": chnl_id})
+                            try:
+                                if cap_dets:
+                                    cap = cap_dets["caption"]
+                                    replaced_caption = cap.format(file_name=file_name)
+                                    await first_message.edit_caption(replaced_caption)
+                                else:
+                                    replaced_caption = Rkn_Bots.DEF_CAP.format(file_name=file_name)
+                                    await first_message.edit_caption(replaced_caption)
+                            except FloodWait as e:
+                                await asyncio.sleep(e.x)
+                                continue
         return
 
-    if message.media:   
+    if message.media:
         for file_type in ("video", "audio", "document", "voice"):
             obj = getattr(message, file_type, None)
             if obj and hasattr(obj, "file_name"):
                 file_name = obj.file_name
-                file_name = (
-                    re.sub(r"@\w+\s*", "", file_name)
-                    .replace("_", " ")
-                    .replace(".", " ")
-                )
-                cap_dets = await chnl_ids.find_one({"chnl_id": chnl_id})
-                try:
-                    if cap_dets:
-                        cap = cap_dets["caption"]
-                        replaced_caption = cap.format(file_name=file_name)
-                        await message.edit(replaced_caption)
-                    else:
-                        replaced_caption = Rkn_Bots.DEF_CAP.format(file_name=file_name)
-                        await message.edit(replaced_caption)
-                except FloodWait as e:
-                    await asyncio.sleep(e.x)
-                    continue
+                if file_name: 
+                    file_name = (
+                        re.sub(r"@\w+\s*", "", file_name)
+                        .replace("_", " ")
+                        .replace(".", " ")
+                    )
+                    cap_dets = await chnl_ids.find_one({"chnl_id": chnl_id})
+                    try:
+                        if cap_dets:
+                            cap = cap_dets["caption"]
+                            replaced_caption = cap.format(file_name=file_name)
+                            await message.edit_caption(replaced_caption)
+                        else:
+                            replaced_caption = Rkn_Bots.DEF_CAP.format(file_name=file_name)
+                            await message.edit_caption(replaced_caption)
+                    except FloodWait as e:
+                        await asyncio.sleep(e.x)
+                        continue
     return
-
-#rip
