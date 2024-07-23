@@ -107,7 +107,7 @@ async def auto_edit_caption(bot, message):
         if media_group_messages:
             first_message = media_group_messages[0]
             if first_message.media:
-                for file_type in ("video", "audio", "document", "voice","photo"):
+                for file_type in ("video", "audio", "document", "voice", "photo"):
                     obj = getattr(first_message, file_type, None)
                     if obj and hasattr(obj, "file_name"):
                         file_name = obj.file_name
