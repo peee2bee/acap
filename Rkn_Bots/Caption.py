@@ -97,15 +97,17 @@ async def delCap(_, msg):
 @Client.on_message(filters.channel)
 async def auto_edit_caption(bot, message):
     chnl_id = message.chat.id
+
     if message.caption:
-        return      
+        return
     if message.media_group_id:
         media_group_id = message.media_group_id
-        media_group_messages = await bot.get_media_group(message.chat.id, media_group_id)
+        media_group_messages = await bot.get_media_group(chat_id=message.chat.id, media_group_id=media_group_id)
+
         if media_group_messages:
             first_message = media_group_messages[0]
             if first_message.media:
-                for file_type in ("video", "audio", "document", "voice"):
+                for file_type in ("video", "audio", "document", "voice","photo"):
                     obj = getattr(first_message, file_type, None)
                     if obj and hasattr(obj, "file_name"):
                         file_name = obj.file_name
@@ -130,7 +132,7 @@ async def auto_edit_caption(bot, message):
         return
 
     if message.media:
-        for file_type in ("video", "audio", "document", "voice"):
+        for file_type in ("video", "audio", "document", "voice", "photo"):
             obj = getattr(message, file_type, None)
             if obj and hasattr(obj, "file_name"):
                 file_name = obj.file_name
